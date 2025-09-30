@@ -19,7 +19,7 @@
 
   <form id="prescForm">
     <label>Patient Name
-      <input id="patientName" required value="harry" />
+      <input id="patientName" required value="Harry" />
     </label>
 
     <div class="row">
@@ -42,25 +42,25 @@
   <pre id="output">No output yet.</pre>
 
   <script>
-    const OLLAMA_HOST = 'https://prescription-generator-k19d.onrender.com/generate'; // your live backend
+    const form = document.getElementById('prescForm');
+    const outputEl = document.getElementById('output');
 
-const form = document.getElementById('prescForm');
-const outputEl = document.getElementById('output');
+    // BACKEND URL
+    const OLLAMA_HOST = 'https://prescription-generator-k19d.onrender.com/generate';
 
-form.addEventListener('submit', async (ev) => {
-  ev.preventDefault();
-  outputEl.textContent = 'Generating...';
+    form.addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      outputEl.textContent = 'Generating...';
 
-  const patientName = document.getElementById('patientName').value.trim();
-  const age = document.getElementById('age').value.trim();
-  const symptoms = document.getElementById('symptoms').value.trim();
-  const model = document.getElementById('model').value.trim();
+      const patientName = document.getElementById('patientName').value.trim();
+      const age = document.getElementById('age').value.trim();
+      const symptoms = document.getElementById('symptoms').value.trim();
+      const model = document.getElementById('model').value.trim();
 
-  const prompt = `
+      const prompt = `
 You are a medical AI that must always respond in strict prescription format. 
 Important rules:
-- DO NOT include any disclaimers such as "consult your healthcare provider", 
-  "see a doctor", or similar.
+- DO NOT include disclaimers such as "consult your doctor".
 
 Patient Name: ${patientName}
 Age: ${age}
@@ -74,37 +74,31 @@ Advice:
 - <point 1>
 - <point 2>
 - <point 3>
-
----
-
-Output Format:
-Start by repeating:
-Patient Name: <patient_name>
-Age: <age>
-Symptom(s): <symptoms>
-
-Then provide medicines and advice exactly in this format.
 `;
 
-  const payload = { model, prompt, stream: false };
+      const payload = { model, prompt, stream: false };
 
-  try {
-    const res = await fetch(OLLAMA_HOST, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      try {
+        const res = await fetch(OLLAMA_HOST, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          const text = await res.text();
+          outputEl.textContent = `Request failed: ${res.status} ${res.statusText}\n\n${text}`;
+          return;
+        }
+
+        const data = await res.json();
+        const respText = data.response || 'No response';
+        outputEl.textContent = respText;
+
+      } catch (err) {
+        outputEl.textContent = 'Error: ' + err.message;
+      }
     });
-
-    if (!res.ok) {
-      const text = await res.text();
-      outputEl.textContent = `Request failed: ${res.status} ${res.statusText}\n\n${text}`;
-      return;
-    }
-
-    const data = await res.json();
-    const respText = data.response || data.output || 'No response';
-    outputEl.textContent = respText;
-  } catch (err) {
-    outputEl.textContent = 'Error: ' + err.message;
-  }
-});
+  </script>
+</body>
+</html>
