@@ -42,21 +42,21 @@
   <pre id="output">No output yet.</pre>
 
   <script>
-    const OLLAMA_HOST = 'https://your-backend-url.com/generate'; // replace with your deployed backend
+    const OLLAMA_HOST = 'https://prescription-generator-k19d.onrender.com/generate'; // your live backend
 
-    const form = document.getElementById('prescForm');
-    const outputEl = document.getElementById('output');
+const form = document.getElementById('prescForm');
+const outputEl = document.getElementById('output');
 
-    form.addEventListener('submit', async (ev) => {
-      ev.preventDefault();
-      outputEl.textContent = 'Generating...';
+form.addEventListener('submit', async (ev) => {
+  ev.preventDefault();
+  outputEl.textContent = 'Generating...';
 
-      const patientName = document.getElementById('patientName').value.trim();
-      const age = document.getElementById('age').value.trim();
-      const symptoms = document.getElementById('symptoms').value.trim();
-      const model = document.getElementById('model').value.trim();
+  const patientName = document.getElementById('patientName').value.trim();
+  const age = document.getElementById('age').value.trim();
+  const symptoms = document.getElementById('symptoms').value.trim();
+  const model = document.getElementById('model').value.trim();
 
-      const prompt = `
+  const prompt = `
 You are a medical AI that must always respond in strict prescription format. 
 Important rules:
 - DO NOT include any disclaimers such as "consult your healthcare provider", 
@@ -86,28 +86,25 @@ Symptom(s): <symptoms>
 Then provide medicines and advice exactly in this format.
 `;
 
-      const payload = { model, prompt, stream: false };
+  const payload = { model, prompt, stream: false };
 
-      try {
-        const res = await fetch(OLLAMA_HOST, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-
-        if (!res.ok) {
-          const text = await res.text();
-          outputEl.textContent = `Request failed: ${res.status} ${res.statusText}\n\n${text}`;
-          return;
-        }
-
-        const data = await res.json();
-        const respText = (data && (data.response || data.output || JSON.stringify(data, null, 2))) || 'No response';
-        outputEl.textContent = respText;
-      } catch (err) {
-        outputEl.textContent = 'Error: ' + err.message;
-      }
+  try {
+    const res = await fetch(OLLAMA_HOST, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
     });
-  </script>
-</body>
-</html>
+
+    if (!res.ok) {
+      const text = await res.text();
+      outputEl.textContent = `Request failed: ${res.status} ${res.statusText}\n\n${text}`;
+      return;
+    }
+
+    const data = await res.json();
+    const respText = data.response || data.output || 'No response';
+    outputEl.textContent = respText;
+  } catch (err) {
+    outputEl.textContent = 'Error: ' + err.message;
+  }
+});
