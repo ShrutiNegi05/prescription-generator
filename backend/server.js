@@ -1,13 +1,13 @@
-const express = require('express');
-const cors = require('cors');  // <- Add this
-const bodyParser = require('body-parser');
+import express from 'express';
+import cors from 'cors';
+import bodyParser from 'body-parser';
 
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// Enable CORS for all origins (or restrict to your frontend URL)
+// Enable CORS
 app.use(cors({
-  origin: 'https://prescription-frontend-ayr7.onrender.com' // restrict to your frontend
+  origin: 'https://prescription-frontend-ayr7.onrender.com'
 }));
 
 app.use(bodyParser.json());
@@ -16,8 +16,6 @@ app.post('/generate', async (req, res) => {
   const { model, prompt, stream } = req.body;
 
   try {
-    // Here, call your Ollama API or generate prescription logic
-    // For example purposes, let's return a dummy response
     const response = `
 Patient Name: John Doe
 Age: 45
@@ -33,7 +31,7 @@ Advice:
 - Seek immediate help if pain worsens
 `;
 
-    res.json({ response }); // send response as JSON
+    res.json({ response });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Something went wrong' });
