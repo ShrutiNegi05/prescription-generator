@@ -5,7 +5,7 @@ import bodyParser from 'body-parser';
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// Enable CORS
+// Allow requests from frontend
 app.use(cors({
   origin: 'https://prescription-frontend-ayr7.onrender.com'
 }));
@@ -13,29 +13,7 @@ app.use(cors({
 app.use(bodyParser.json());
 
 app.post('/generate', async (req, res) => {
-  const { model, prompt, stream } = req.body;
-
-  try {
-    const response = `
-Patient Name: John Doe
-Age: 45
-Symptom(s): chest pain
-
-Medicines:
-- Aspirin, 75mg, 1 tablet daily
-- Nitroglycerin, 0.4mg, 1 tablet as needed
-
-Advice:
-- Rest and avoid strenuous activity
-- Monitor blood pressure daily
-- Seek immediate help if pain worsens
-`;
-
-    res.json({ response });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Something went wrong' });
-  }
+  // your prescription logic or Ollama API call
 });
 
 app.listen(PORT, () => {
