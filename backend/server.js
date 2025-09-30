@@ -19,26 +19,7 @@ app.post('/generate', async (req, res) => {
   const { model, prompt, stream } = req.body;
 
   try {
-    // ----- TEMPORARY DUMMY RESPONSE FOR TESTING -----
-    // Remove this block and uncomment Ollama API call after testing
-    const dummyResponse = `
-Patient Name: Harry
-Age: 45
-Symptom(s): chest pain
-
-Medicines:
-- Aspirin, 75mg, 1 tablet daily
-- Nitroglycerin, 0.4mg, 1 tablet as needed
-
-Advice:
-- Rest and avoid strenuous activity
-- Monitor blood pressure daily
-- Seek immediate help if pain worsens
-`;
-    return res.json({ response: dummyResponse });
-
-    // ----- USE THIS BLOCK FOR ACTUAL OLLAMA API -----
-    /*
+    // ----- CALL OLLAMA API -----
     const OLLAMA_API_URL = 'http://69.62.76.171:11434/api/generate';
 
     const response = await fetch(OLLAMA_API_URL, {
@@ -48,9 +29,9 @@ Advice:
     });
 
     const data = await response.json();
-    const respText = data.response || data.output || 'No response';
+    const respText = data.response || data.output || 'No response from Ollama';
     res.json({ response: respText });
-    */
+
   } catch (err) {
     console.error('Error generating prescription:', err);
     res.status(500).json({ error: 'Failed to generate prescription' });
