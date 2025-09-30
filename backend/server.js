@@ -1,26 +1,45 @@
-import express from 'express';
-import fetch from 'node-fetch';
-import cors from 'cors';
+const express = require('express');
+const cors = require('cors');  // <- Add this
+const bodyParser = require('body-parser');
 
 const app = express();
-app.use(cors());
-app.use(express.json());
+const PORT = process.env.PORT || 10000;
 
-const OLLAMA_API_URL = 'http://69.62.76.171:11434/api/generate'; // Ollama API
+// Enable CORS for all origins (or restrict to your frontend URL)
+app.use(cors({
+  origin: 'https://prescription-frontend-ayr7.onrender.com' // restrict to your frontend
+}));
+
+app.use(bodyParser.json());
 
 app.post('/generate', async (req, res) => {
+  const { model, prompt, stream } = req.body;
+
   try {
-    const response = await fetch(OLLAMA_API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(req.body)
-    });
-    const data = await response.json();
-    res.json(data);
+    // Here, call your Ollama API or generate prescription logic
+    // For example purposes, let's return a dummy response
+    const response = `
+Patient Name: John Doe
+Age: 45
+Symptom(s): chest pain
+
+Medicines:
+- Aspirin, 75mg, 1 tablet daily
+- Nitroglycerin, 0.4mg, 1 tablet as needed
+
+Advice:
+- Rest and avoid strenuous activity
+- Monitor blood pressure daily
+- Seek immediate help if pain worsens
+`;
+
+    res.json({ response }); // send response as JSON
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error(err);
+    res.status(500).json({ error: 'Something went wrong' });
   }
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Backend running on port ${PORT}`);
+});
